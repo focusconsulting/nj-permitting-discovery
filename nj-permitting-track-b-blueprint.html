@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NJ Permitting: how Track B feeds Track A</title>
+<style>
+  :root{
+    --ink:#171717; --soft:#454545; --muted:#757575; --line:#e6e6e6; --cream:#ffffff; --panel:#f6f7f8;
+    --a:#0076d6; --q:#e5a000; --sys:#00a91c; --b:#936f38;
+    --mono:"SFMono-Regular",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:"Georgia","Iowan Old Style",serif;line-height:1.4;}
+  .wrap{max-width:1180px;margin:0 auto;padding:32px 20px 60px;}
+  .eyebrow{font-family:var(--mono);letter-spacing:.09em;text-transform:uppercase;font-size:.62rem;color:var(--muted);}
+  h1{font-size:1.5rem;font-weight:600;margin:.3rem 0 .3rem;}
+  .lede{color:var(--soft);font-size:.92rem;max-width:880px;margin:.2rem 0 1rem;}
+
+  /* flow band */
+  .flow{background:#fff;border:1px solid var(--line);padding:20px 18px;margin:0 0 20px;overflow-x:auto;}
+  .flowrow{display:flex;align-items:stretch;gap:0;min-width:760px;}
+  .flowcol{display:flex;flex-direction:column;justify-content:center;gap:12px;}
+  .flowcol.gates{flex:0 0 240px;}
+  .flowcol.spine{flex:0 0 220px;}
+  .flowcol.end{flex:0 0 200px;}
+  .flowlabel{font-family:var(--mono);font-size:.58rem;text-transform:uppercase;letter-spacing:.06em;color:var(--b);margin-bottom:4px;text-align:center;}
+  .flowlabel.a{color:var(--a);}
+  .fbox{border:1px solid var(--line);border-radius:4px;padding:10px 12px;font-size:.78rem;line-height:1.35;color:var(--soft);background:var(--cream);}
+  .fbox b{color:var(--ink);display:block;font-size:.82rem;margin-bottom:2px;}
+  .fbox .sub{font-family:var(--mono);font-size:.56rem;color:var(--muted);display:block;margin-top:4px;text-transform:uppercase;letter-spacing:.04em;}
+  .fbox.gate{border-left:3px solid var(--b);}
+  .fbox.spinebox{border-left:3px solid var(--a);background:var(--panel);}
+  .fbox.endbox{border-left:3px solid var(--sys);}
+  .farrows{flex:0 0 46px;display:flex;flex-direction:column;justify-content:center;align-items:center;color:var(--a);font-size:1.3rem;gap:20px;}
+  .farrow1{flex:0 0 46px;display:flex;align-items:center;justify-content:center;color:var(--sys);font-size:1.3rem;}
+  .flowcap{font-size:.78rem;color:var(--muted);margin:.5rem 0 0;}
+
+  /* grid */
+  .scroll{overflow-x:auto;border:1px solid var(--line);background:#fff;margin:0 0 16px;}
+  .gridrow{display:grid;grid-template-columns:130px repeat(2,1fr);min-width:640px;}
+  .gridrow>div{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px 10px;font-size:.74rem;color:var(--soft);}
+  .gridrow>div.phase{background:var(--b);color:#fff;font-weight:700;font-size:.78rem;}
+  .lane{background:var(--panel);font-family:var(--mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);font-weight:600;display:flex;align-items:center;}
+  .corner{background:var(--panel);}
+  .qrow{background:#fef0c8;}
+  .gap{color:var(--q);font-style:italic;}
+
+  .callout{background:#ecf3ec;border:1px solid var(--sys);border-radius:8px;padding:12px 14px;font-size:.8rem;color:var(--soft);line-height:1.5;margin:0 0 16px;}
+  .callout b{color:var(--sys);}
+  .callout h3{margin:0 0 6px;font-size:.85rem;color:var(--ink);}
+  .callout+.callout{margin-top:-8px;}
+
+  .cite{font-family:var(--mono);font-size:.56rem;color:var(--muted);}
+  a.cite{text-decoration:none;} a.cite:hover{text-decoration:underline;color:var(--a);}
+  .qlist{margin:0;padding-left:14px;} .qlist li{margin:0 0 3px;}
+
+  .foot{margin-top:1.2rem;font-size:.78rem;color:var(--muted);max-width:1000px;}
+  .srclist{margin:.4rem 0 0;padding-left:0;list-style:none;}
+  .srclist li{margin:5px 0;font-size:.76rem;padding:2px 4px;}
+  .srclist li:target{background:#fef0c8;}
+  .conf{margin-top:.8rem;font-family:var(--mono);font-size:.62rem;color:var(--muted);border-top:1px solid var(--line);padding-top:8px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Focus Consulting &middot; NJ DCA / InnovateNJ Permitting Discovery &middot; companion to Track A current-state blueprint &middot; July 2026</div>
+  <h1>How Track B feeds into Track A</h1>
+  <p class="lede">This is our approximation of how two State prior approvals feed into the Track A construction permit, built from publicly available material listed at the bottom. If a project touches a state highway or a wetland, the applicant needs a second approval from a different state agency before DCA can actually hand over the construction permit: DOT for the highway, DEP for the wetland. The construction code calls this a "prior approval," since it has to happen before DCA's own permit can issue. DCA can still review the building plans while a prior approval is pending, it just can't issue the final permit until the approval comes through. The code names the DOT highway approval directly as a prior approval. It doesn't name the DEP wetlands approval the same way, but we read it as covered by the same rule, since the code defines the category broadly enough to include it. That's our reading, not something DCA has confirmed. <span class="cite">5:23-1.4, 2.15(a)5, 2.16</span></p>
+
+  <div class="key" style="display:flex;gap:14px;flex-wrap:wrap;font-size:.7rem;color:var(--muted);margin:.4rem 0 1rem;">
+    <span><b style="color:var(--ink)">[n]</b> sourced (see notes)</span>
+    <span style="color:var(--b)">&#9632;</span> Track B, the DEP and DOT prior approvals
+    <span style="color:var(--a)">&#9632;</span> Track A, the construction permit
+    <span class="sysrow" style="color:var(--sys)">&#9632;</span> outcome
+  </div>
+
+  <div class="flow">
+    <div class="flowrow">
+      <div class="flowcol gates">
+        <div class="flowlabel">Track B, the prior approvals</div>
+        <div class="fbox gate"><b>DEP freshwater wetlands permit</b>DEP has 90 days to decide, once it says the application is complete. Before that, a separate step tells the applicant whether wetlands are even present, and that alone can take 30 to about 90 days depending on whether DEP needs more information or a site visit.<span class="sub">N.J.A.C. 7:7A</span></div>
+        <div class="fbox gate"><b>DOT major access permit</b>DOT checks the application is complete within 15 days, then reviews it: 30 days for a smaller project, 90 for a larger one.<span class="sub">N.J.A.C. 16:47</span></div>
+      </div>
+      <div class="farrows"><span>&rarr;</span><span>&rarr;</span></div>
+      <div class="flowcol spine">
+        <div class="flowlabel a">Track A, the construction permit</div>
+        <div class="fbox spinebox"><b>Construction permit</b>Cannot issue until required State approvals are in place. The 20-business-day decision clock starts here.<span class="sub">where the two tracks meet</span></div>
+      </div>
+      <div class="farrow1">&rarr;</div>
+      <div class="flowcol end">
+        <div class="fbox endbox"><b>Building legal to use</b>Certificate of occupancy issues after final inspection.<span class="sub">outcome</span></div>
+      </div>
+    </div>
+  </div>
+  <p class="flowcap">A delay in either prior approval delays when the construction permit can issue. The rule doesn't say whether DEP or DOT usually causes the bigger delay for a given project. We'd have to ask people who've actually gone through it to find out.</p>
+
+  <div class="callout">
+    <h3>Worth flagging for DCA</h3>
+    <p style="margin:0">A DEP wetlands applicant can never assume silence means yes: past the deadline, the rule says they still can't treat it as approved. <a class="cite" href="#tb24">[24]</a> Track A's construction permit works the other way: silence past 20 business days lets the applicant treat it as a denial and appeal. If a project needs both, the applicant is on two different clocks with two different rules for what silence means.</p>
+  </div>
+
+  <div class="scroll">
+    <div class="gridrow">
+      <div class="corner"></div>
+      <div class="phase">DEP freshwater wetlands</div>
+      <div class="phase" style="background:var(--a);">DOT major access</div>
+    </div>
+    <div class="gridrow">
+      <div class="lane">Applicant does</div>
+      <div>Requests a Letter of Interpretation to check whether wetlands are present. Picks the right permit tier, gives public notice, then files with the fee. <a class="cite" href="#tb24">[24]</a></div>
+      <div>Figures out which permit category applies, based on how much traffic the project will generate. Requests a pre-application meeting where required, and prepares a traffic study. <a class="cite" href="#tb25">[25]</a></div>
+    </div>
+    <div class="gridrow">
+      <div class="lane">Agency actor</div>
+      <div>DEP's Land Use Regulation Program issues the LOI, confirms the tier, and reviews the application. <a class="cite" href="#tb24">[24]</a></div>
+      <div>NJDOT's Bureau of Major Access Permits holds the pre-application meeting. If the applicant pays to have DOT look at the site early, before the full application is filed, DOT responds within 30 days. <a class="cite" href="#tb25">[25]</a></div>
+    </div>
+    <div class="gridrow">
+      <div class="lane">Decision rule</div>
+      <div>DEP has 90 days once the application is complete to decide. That can stretch 30 more days, but only if both sides agree in writing. If DEP goes silent past the deadline, the applicant can't assume it's approved. <a class="cite" href="#tb24">[24]</a></div>
+      <div>Once the application is complete, DOT reviews it: 30 days for a smaller project, 90 for a larger one. If DOT finds something missing, the applicant gets 90 days to respond, then DOT takes another 90 days to look again. <a class="cite" href="#tb25">[25]</a></div>
+    </div>
+    <div class="gridrow">
+      <div class="lane">Systems</div>
+      <div class="sysrow">NJDEP Online (njdeponline.com) files wetlands applications electronically. <a class="cite" href="#tb26">[26]</a></div>
+      <div class="sysrow">MAP E-Permitting (njdotepermits.net) tracks the application end to end. <a class="cite" href="#tb25">[25]</a></div>
+    </div>
+    <div class="gridrow">
+      <div class="lane">Open questions</div>
+      <div class="qrow"><ul class="qlist"><li>How many applicants pass DEP's completeness check on the first try, and what makes DEP reject the rest?</li><li>The property owner and the engineer they hired both wait on the LOI before the wetlands application can even start. How long does that wait run?</li></ul></div>
+      <div class="qrow"><ul class="qlist"><li>How many applicants clear DOT's first technical review, and how many get sent back? Each cycle costs the applicant 90 days to respond, then DOT another 90 days to look again.</li><li>The applicant pays a traffic engineer to prepare the impact study before DOT's clock even starts. How much of the total wait is that study? DOT's own process wouldn't touch that part of the clock.</li></ul></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <p>Companion to the Track A current-state blueprint, adding detail on the two prior approvals named in that document's Track B band. Sources here continue the numbering in "DCA Permitting Blueprint: Sources," the shared appendix for both documents.</p>
+    <ul class="srclist">
+      <li id="tb24"><b>[24]</b> N.J.A.C. 7:7A: LOI clock at 19.7(a) (30 days after receipt if no additional information is needed; 45 days after DEP receives whatever information closes the gap, if additional information was needed; +45 days more if DEP does a site inspection); completeness at 19.2 (20 working days, 90-day applicant cure window; if DEP misses that window, the application is automatically counted as complete); decision at 19.7(b)-(d) (90 calendar days from completeness, +30 only by mutual written agreement; if DEP misses the deadline, the applicant still cannot assume the application is approved). USEPA transmittal and clock suspension for major discharges at 19.5, 19.7(e). Read directly from the operative text at law.cornell.edu, 2026-07. DEP's Land Use Regulation Program is confirmed, across DEP's own permit forms and independent sources, as the administering body for wetlands permits and Letters of Interpretation.</li>
+      <li id="tb25"><b>[25]</b> N.J.A.C. 16:47: category by trips at 2.1; review-path selection at 9.5(a), confirming one-step is 9.6 and two-step is 9.7; pre-application meeting and traffic impact study at 9.4(b)-(e), including the $1,000 study-area pre-review fee credited to the application fee; one-step completeness and review at 9.6(a)-(d) (15-day completeness, 30-day minor / 90-day major review, 90+90 deficiency loop). Re-checked against the primary rule text at law.cornell.edu, 2026-07. NJDOT's own MAP overview page (dot.nj.gov/transportation/business/epermits/map/overview.shtm) describes MAP E-Permitting, at njdotepermits.net, as the web-based, GIS-enabled system that manages, tracks, and documents the Major Access Permit process; that same page cites the one-step process as 16:47-9.7, contradicting the rule text, which places it at 9.6. We haven't confirmed this discrepancy with DOT.</li>
+      <li id="tb26"><b>[26]</b> NJDEP Online (njdeponline.com), confirmed via dep.nj.gov/wlm/eservices/ as the electronic filing system for freshwater wetlands permits, 2026-07. SAGE, sometimes seen on DEP program pages, is DEP's System for Administering Grants Electronically, its grants and contracting portal, unrelated to wetlands permit review, per DEP's own Operation FAST release (dep.nj.gov/newsrel/26_0019/).</li>
+    </ul>
+    <p class="conf">Confidential and proprietary to Focus Consulting. Prepared for NJ DCA / InnovateNJ. Not for redistribution.</p>
+  </div>
+
+</div>
+</body>
+</html>

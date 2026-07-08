@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NJ Permitting Discovery — Delivery Timeline</title>
+<style>
+:root{
+  --nj-navy:#112f4e; --nj-navy-mid:#0b4778;
+  --nj-blue:#005ea2; --nj-green:#008817; --nj-gold:#ffbe2e; --nj-info:#009ec1;
+  --canvas:#f4f5f6; --card:#ffffff;
+  --ink:#1c1d1f; --ink-soft:#5d6167; --ink-faint:#8b8f94;
+  --line:#dfe1e2; --line-soft:#edeff0;
+  --font:"Public Sans Web",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--canvas);}
+body{font-family:var(--font);color:var(--ink);}
+.wrap{max-width:1180px;margin:0 auto;padding:0 0 40px;}
+
+.appbar{background:var(--nj-navy);color:#fff;padding:22px 32px;display:flex;align-items:flex-start;justify-content:space-between;gap:24px;border-radius:0 0 4px 4px;}
+.appbar h1{margin:0 0 4px;font-size:20px;font-weight:700;letter-spacing:.2px;}
+.appbar p{margin:0;font-size:13px;color:rgba(255,255,255,.78);}
+.badge{flex:0 0 auto;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;border-radius:4px;white-space:nowrap;}
+
+.legend{display:flex;align-items:center;flex-wrap:wrap;padding:16px 32px 4px;font-size:12.5px;color:var(--ink-soft);}
+.legend .item{display:inline-flex;align-items:center;margin-right:26px;}
+.legend .item .swatch,.legend .item .diamond,.legend .item .flagmark{margin-right:7px;}
+.swatch{display:inline-block;width:14px;height:14px;border-radius:2px;vertical-align:middle;}
+.diamond{display:inline-block;width:10px;height:10px;background:var(--nj-gold);border:1px solid #a35f00;transform:rotate(45deg);border-radius:1px;vertical-align:middle;}
+.flagmark{display:inline-block;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid var(--nj-info);vertical-align:middle;}
+
+.chart-wrap{margin:14px 32px 0;background:var(--card);border:1px solid var(--line);border-radius:4px;overflow:hidden;box-shadow:0 1px 2px rgba(20,30,50,.05),0 3px 10px rgba(20,30,50,.06);}
+table.gantt{width:100%;border-collapse:collapse;table-layout:fixed;}
+table.gantt col.labelcol{width:150px;}
+table.gantt th, table.gantt td{border-left:1px solid var(--line-soft);padding:8px 5px;text-align:center;vertical-align:middle;}
+table.gantt th:first-child, table.gantt td:first-child{border-left:none;}
+table.gantt thead th{background:var(--card);padding-top:10px;padding-bottom:10px;}
+table.gantt thead .wn{font-size:12px;font-weight:700;color:var(--ink);display:block;}
+table.gantt tbody tr{border-top:1px solid var(--line-soft);}
+td.rowlabel{background:var(--line-soft);font-size:12.5px;font-weight:700;color:var(--ink);text-align:left;padding-left:14px;}
+tr.milestones td{height:30px;font-size:8.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);}
+tr.milestones td .mk{display:flex;flex-direction:column;align-items:center;}
+tr.milestones td .mk .diamond{margin-bottom:3px;}
+tr.visits td{height:26px;font-size:8.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);}
+tr.visits td .mk{display:flex;flex-direction:column;align-items:center;}
+tr.visits td .mk .flagmark{margin-bottom:3px;}
+td.bar{color:#fff;font-size:11px;font-weight:600;line-height:1.3;padding:9px 8px;}
+td.bar.blue{background:var(--nj-blue);}
+td.bar.green{background:var(--nj-green);}
+td.bar.striped{background:repeating-linear-gradient(135deg, var(--nj-blue) 0 14px, var(--nj-green) 14px 28px);}
+td.bar .sub{display:block;font-weight:500;font-size:9.5px;opacity:.88;margin-top:2px;}
+tr.spacer td{height:6px;padding:0;background:var(--card);border-left:none;}
+
+.footer-note{margin:18px 32px 0;text-align:center;font-size:11.5px;font-style:italic;color:var(--ink-faint);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="appbar">
+    <div>
+      <h1>NJ Permitting Discovery — Delivery Timeline</h1>
+      <p>12-week period of performance, starting at contract award</p>
+    </div>
+    <div class="badge">Confidential</div>
+  </div>
+
+  <div class="legend">
+    <span class="item"><span class="swatch" style="background:var(--nj-blue)"></span>Track A — DCA discovery</span>
+    <span class="item"><span class="swatch" style="background:var(--nj-green)"></span>Track B — DEP/DOT blueprints</span>
+    <span class="item"><span class="swatch" style="background:repeating-linear-gradient(135deg, var(--nj-blue) 0 4px, var(--nj-green) 4px 8px)"></span>Piggybacked on Track A</span>
+    <span class="item"><span class="diamond"></span>QASP checkpoint / acceptance</span>
+    <span class="item"><span class="flagmark"></span>In-person NJ site visit</span>
+  </div>
+
+  <div class="chart-wrap">
+    <table class="gantt">
+      <colgroup>
+        <col class="labelcol">
+        <col><col><col><col><col><col><col><col><col><col><col>
+      </colgroup>
+      <thead>
+        <tr>
+          <th></th>
+          <th><span class="wn">Week 1</span></th>
+          <th><span class="wn">Week 2</span></th>
+          <th><span class="wn">Week 3</span></th>
+          <th><span class="wn">Week 4</span></th>
+          <th><span class="wn">Week 5</span></th>
+          <th><span class="wn">Week 6</span></th>
+          <th><span class="wn">Week 7</span></th>
+          <th><span class="wn">Week 8</span></th>
+          <th><span class="wn">Week 9</span></th>
+          <th><span class="wn">Week 10</span></th>
+          <th><span class="wn">Week 11</span></th>
+          <th><span class="wn">Week 12</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="milestones">
+          <td></td>
+          <td></td>
+          <td><span class="mk"><span class="diamond"></span>QASP</span></td>
+          <td></td>
+          <td><span class="mk"><span class="diamond"></span>QASP</span></td>
+          <td></td>
+          <td><span class="mk"><span class="diamond"></span>QASP</span></td>
+          <td></td>
+          <td><span class="mk"><span class="diamond"></span>QASP</span></td>
+          <td></td>
+          <td><span class="mk"><span class="diamond"></span>QASP</span></td>
+          <td><span class="mk"><span class="diamond"></span>Final</span></td>
+        </tr>
+
+        <tr>
+          <td class="rowlabel">Track A<br>DCA</td>
+          <td class="bar blue">Kickoff<span class="sub">Select permit types, guides</span></td>
+          <td class="bar blue" colspan="3">Fieldwork Sprint 1<span class="sub">Staff, municipal, professional</span></td>
+          <td class="bar blue" colspan="2">Fieldwork Sprint 2<span class="sub">Residents + saturation</span></td>
+          <td class="bar blue">Close fieldwork<span class="sub">Draft Deliverable 1</span></td>
+          <td class="bar blue" colspan="2">UCC workshops<span class="sub">Draft Deliverable 2</span></td>
+          <td class="bar blue" colspan="2">Build Deliverable 3<span class="sub">Exec summary, personas</span></td>
+          <td class="bar blue">Submit<span class="sub">Final validation</span></td>
+        </tr>
+
+        <tr class="visits">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td><span class="mk"><span class="flagmark"></span>Visit 1</span></td>
+          <td></td>
+          <td><span class="mk"><span class="flagmark"></span>Visit 2</span></td>
+          <td></td>
+          <td><span class="mk"><span class="flagmark"></span>Visit 3</span></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <td class="rowlabel">Track B<br>DEP/DOT</td>
+          <td class="bar striped" colspan="4">Kickoff<span class="sub">Permit-type questions embedded in Track A fieldwork</span></td>
+          <td class="bar green">Synthesis<span class="sub">Synthesize Track A signal on prior approvals</span></td>
+          <td class="bar green">Working sessions<span class="sub">Map current state</span></td>
+          <td class="bar green">Draft blueprint<span class="sub">Log opportunities</span></td>
+          <td class="bar green">Blueprint + validation<span class="sub">Begin agency review</span></td>
+          <td class="bar green">Finalize blueprint<span class="sub">Incorporate agency feedback</span></td>
+          <td class="bar green">Deliver Deliverable 4<span class="sub">Blueprints + log</span></td>
+          <td class="bar green">Close-out<span class="sub">Package findings for Council</span></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="footer-note">Confidential and proprietary to Focus Consulting. Prepared for NJ DCA / InnovateNJ. Not for redistribution.</p>
+
+</div>
+</body>
+</html>

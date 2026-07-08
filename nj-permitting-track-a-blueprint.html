@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DCA construction permitting: current-state service blueprint</title>
+<style>
+  :root{
+    --ink:#171717; --soft:#454545; --muted:#757575; --line:#e6e6e6; --cream:#ffffff; --panel:#f6f7f8;
+    --a:#0076d6; --q:#e5a000; --sys:#00a91c; --line-lbl:#c2850c; --trackb:#936f38;
+    --mono:"SFMono-Regular",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:"Georgia","Iowan Old Style",serif;line-height:1.35;}
+  .wrap{max-width:1280px;margin:0 auto;padding:30px 18px 60px;}
+  .eyebrow{font-family:var(--mono);letter-spacing:.09em;text-transform:uppercase;font-size:.6rem;color:var(--muted);}
+  h1{font-size:1.4rem;font-weight:600;margin:.25rem 0 .2rem;}
+  .lede{color:var(--soft);font-size:.9rem;max-width:900px;margin:.2rem 0 .5rem;}
+  .key{display:flex;gap:14px;flex-wrap:wrap;font-size:.7rem;color:var(--muted);margin:.4rem 0 1rem;}
+  .key b{color:var(--ink);}
+  .scroll{overflow-x:auto;border:1px solid var(--line);background:#fff;}
+  .bp{min-width:1400px;}
+  .gridrow{display:grid;grid-template-columns:120px repeat(9,1fr);transition:grid-template-columns .25s ease;}
+  .tnote{display:block;font-family:var(--mono);font-size:.55rem;font-weight:400;color:var(--sys);margin-top:3px;line-height:1.3;}
+  .gridrow>div{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:7px 8px;font-size:.7rem;color:var(--soft);overflow:hidden;}
+  .gridrow>div.phase{background:var(--a);color:#fff;font-weight:700;font-size:.75rem;line-height:1.25;}
+  .phase .n{font-family:var(--mono);font-size:.58rem;color:#cfe0e6;display:block;}
+  .gridrow>div.sysrow{color:var(--sys);}
+  .gridrow>div.phase.derived{background:#ecf3ec;color:var(--a);font-weight:600;border-bottom:2px solid var(--sys);}
+  .phase.derived .n{color:var(--sys);}
+  [data-stage="1"]{grid-column:2;}
+  [data-stage="2"]{grid-column:3;}
+  [data-stage="3"]{grid-column:4;}
+  [data-stage="4"]{grid-column:5;}
+  [data-stage="5"]{grid-column:6;}
+  [data-stage="6"]{grid-column:7;}
+  [data-stage="7"]{grid-column:8;}
+  [data-stage="8"]{grid-column:9;}
+  [data-stage="9"]{grid-column:10;}
+  .gridrow>.lane,.gridrow>.corner{grid-column:1;}
+  .sgridrow{display:grid;grid-template-columns:120px repeat(5,1fr);}
+  .sgridrow>div{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:7px 8px;font-size:.7rem;color:var(--soft);}
+  .sgridrow>div.phase{background:var(--sys);color:#fff;font-weight:700;font-size:.75rem;line-height:1.25;}
+  .sgridrow>.lane,.sgridrow>.corner{grid-column:1;}
+  [data-sstage="1"]{grid-column:2;}
+  [data-sstage="2"]{grid-column:3;}
+  [data-sstage="3"]{grid-column:4;}
+  [data-sstage="4"]{grid-column:5;}
+  [data-sstage="5"]{grid-column:6;}
+  .simple-banner{background:#ecf3ec;border:1px solid var(--sys);border-radius:8px;padding:9px 12px;font-size:.72rem;color:var(--soft);line-height:1.5;margin-bottom:10px;}
+  .simple-banner b{color:var(--sys);}
+  .modebar{display:flex;flex-direction:column;gap:8px;margin:.3rem 0 1rem;padding:9px 12px;background:#fff;border:1px solid var(--line);border-radius:8px;}
+  .presetrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .modebar .lbl{font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
+  .modegrp{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;}
+  .modebtn{font-family:var(--mono);font-size:.64rem;letter-spacing:.02em;padding:6px 14px;border:none;background:#fff;color:var(--soft);cursor:pointer;}
+  .modebtn+.modebtn{border-left:1px solid var(--line);}
+  .modebtn[aria-pressed="true"]{background:var(--a);color:#fff;}
+  .modenote{font-size:.68rem;color:var(--muted);line-height:1.4;}
+  .kickoff{grid-column:1 / -1;background:#ecf3ec;border-top:2px solid var(--sys);padding:9px 12px;font-size:.72rem;color:var(--soft);line-height:1.5;}
+  .kickoff b{color:var(--sys);}
+  .lane{background:var(--panel);font-family:var(--mono);font-size:.58rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);font-weight:600;display:flex;align-items:center;}
+  .corner{background:var(--panel);}
+  .lineof{grid-column:1 / -1;background:#fef0c8;border-top:1px dashed var(--line-lbl);border-bottom:1px dashed var(--line-lbl);font-family:var(--mono);font-size:.56rem;text-transform:uppercase;letter-spacing:.08em;color:var(--line-lbl);text-align:center;padding:3px;}
+  .cite{font-family:var(--mono);font-size:.54rem;color:var(--muted);}
+  a.cite{text-decoration:none;} a.cite:hover{text-decoration:underline;color:var(--a);}
+  .qlist{margin:0;padding-left:14px;} .qlist li{margin:0 0 3px;}
+  .srclist{margin:.4rem 0 0;padding-left:0;list-style:none;}
+  .srclist li{margin:4px 0;font-size:.76rem;padding:2px 4px;}
+  .srclist li:target{background:#fef0c8;}
+  .man{font-family:var(--mono);font-size:.54rem;color:var(--q);font-weight:700;}
+  .sysrow{color:var(--sys);}
+  .qrow{background:#fef0c8;}
+  .qrow div, .q{color:var(--q);}
+  .gap{color:var(--q);font-style:italic;}
+  .trackb-band{grid-column:1 / -1;background:#fef0c8;border-bottom:1px solid var(--line);padding:8px 10px;font-size:.72rem;color:var(--soft);}
+  .trackb-band b{color:var(--trackb);}
+  .foot{margin-top:1.2rem;font-size:.76rem;color:var(--muted);max-width:1000px;}
+  .conf{margin-top:.8rem;font-family:var(--mono);font-size:.62rem;color:var(--muted);border-top:1px solid var(--line);padding-top:8px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Focus Consulting &middot; NJ DCA / InnovateNJ Permitting Discovery &middot; current-state, Track A &middot; July 2026</div>
+  <h1>How a construction permit moves through DCA today</h1>
+  <p class="lede">This is our approximation of how a construction permit moves through DCA today, one stage at a time, left to right, built from publicly available material. Each row is a different view: what the applicant does, what they see, what staff do behind the scenes, and the systems in play. Every cell is backed by a source, shown by the number in brackets and listed at the bottom. Some of it comes from the RFP and its Q&amp;A; the rest we found in public records. Where we don't yet know, the bottom row carries the open question. The dark headers are the stages the RFP names; the lighter two at the end, build and close-out, come from the building code.</p>
+  <div class="key">
+    <span><b>[n]</b> sourced (see notes)</span>
+    <span class="man">manual</span><span>&nbsp;/ auto in backstage</span>
+    <span class="q"><b>?</b> open question, to confirm in the field</span>
+    <span class="sysrow">systems</span>
+  </div>
+
+  <div class="modebar" role="group" aria-label="Discovery focus lens">
+    <div class="presetrow">
+      <span class="lbl">Which blueprint:</span>
+      <div class="modegrp">
+        <button class="modebtn" data-preset="simple" aria-pressed="false" onclick="applyPreset('simple')" type="button">Simple journey</button>
+        <button class="modebtn" data-preset="complex" aria-pressed="true" onclick="applyPreset('complex')" type="button">Complex journey</button>
+        <button class="modebtn" data-preset="rfp7" aria-pressed="false" onclick="applyPreset('rfp7')" type="button">RFP's 7 named stages</button>
+      </div>
+    </div>
+    <span class="modenote">"Complex journey" shows the 9-stage blueprint below: a licensed professional, on work that's DCA-reserved or needs full plan review. "Simple journey" shows a shorter, separate blueprint for a homeowner on a minor residential alteration, roughly 89% of volume <a class="cite" href="#s18">[18]</a>, since that path likely skips case-level DCA review. "RFP's 7 named stages" shows the Complex blueprint with Stages 8 and 9 hidden, build and close-out, which come from the building code rather than the RFP's own list.</span>
+  </div>
+
+  <div class="scroll" id="complex-blueprint">
+  <div class="bp">
+
+    <!-- TRACK B BAND -->
+    <div class="trackb-band"><b>Track B, upstream:</b> where a project needs them, State prior approvals must be met before the construction permit can <i>issue</i> (5:23-1.4, 2.15(a)5, 2.16); plan review can proceed in parallel. The code names a DOT major access permit directly as one of these required-first approvals (highway curb cuts, 1.4). It doesn't name a DEP freshwater wetlands permit the same way, but we read it as covered by the same rule, since the code defines the category broadly enough to include it; that's our reading, not something DCA has confirmed. DEP decides within 90 calendar days after it rules the application complete (7:7A-19.7(b)); before that, its Letter of Interpretation (which tells the applicant whether wetlands are even present) runs 30 days if DEP needs no additional information, 45 days from when DEP gets whatever information closes the gap, and up to 45 more if DEP does a site inspection (7:7A-19.2, 19.7(a)). DOT confirms the application is complete within 15 days, then reviews it in 30 days for a minor permit or 90 for a major one (16:47-9.6). These feed the permit-issuance stage below (Stage 5).</div>
+
+    <!-- PHASE BAND -->
+    <div class="gridrow">
+    <div class="corner"></div>
+    <div class="phase" data-stage="1"><span class="n">1</span>Application &amp; submission</div>
+    <div class="phase" data-stage="2"><span class="n">2</span>Intake &amp; initial review</div>
+    <div class="phase" data-stage="3"><span class="n">3</span>Deficiency &amp; communication</div>
+    <div class="phase" data-stage="4"><span class="n">4</span>Correction &amp; resubmission</div>
+    <div class="phase" data-stage="5"><span class="n">5</span>Approval/denial &amp; issuance</div>
+    <div class="phase" data-stage="6"><span class="n">6</span>Status tracking &amp; inquiry</div>
+    <div class="phase" data-stage="7"><span class="n">7</span>State&ndash;municipal coordination</div>
+    <div class="phase derived" data-stage="8"><span class="n">8 &middot; UCC</span>Build<span class="tnote">during construction, weeks to over a year</span></div>
+    <div class="phase derived" data-stage="9"><span class="n">9 &middot; UCC</span>Close-out<span class="tnote">at the end, once it passes final</span></div>
+    </div>
+
+    <!-- APPLICANT DOES -->
+    <div class="gridrow">
+    <div class="lane">Applicant does</div>
+    <div data-stage="1">Explains the project, often at a counter, before knowing which application applies. <a class="cite" href="#s21">[21]</a> Clears any prior approvals first. <a class="cite" href="#s1">[1]</a><a class="cite" href="#s22">[22]</a> Then assembles the permit application, the "jacket": form F100 plus a technical section per trade. <a class="cite" href="#s3">[3]</a> Either the homeowner or a licensed contractor acts as agent; Cherry Hill's front door asks the applicant to say which. <a class="cite" href="#s8">[8]</a></div>
+    <div data-stage="2">For the plans DCA reviews itself, the fee is due before review starts. <a class="cite" href="#s9">[9]</a></div>
+    <div data-stage="3">Receives a deficiency notice; responds. <a class="cite" href="#s4">[4]</a><a class="cite" href="#s9">[9]</a></div>
+    <div data-stage="4">Fixes and resubmits; to amend on ePlans, finds the project number from an old email. <a class="cite" href="#s9">[9]</a></div>
+    <div data-stage="5">Receives a signed permit, or a written denial. <a class="cite" href="#s4">[4]</a></div>
+    <div class="gap" data-stage="6">?</div>
+    <div data-stage="7">&middot;</div>
+    <div data-stage="8">Requests inspections at each construction milestone. <a class="cite" href="#s4">[4]</a></div>
+    <div data-stage="9">Applies in writing for the certificate. <a class="cite" href="#s4">[4]</a></div>
+    </div>
+
+    <!-- SEES -->
+    <div class="gridrow">
+    <div class="lane">What they see</div>
+    <div data-stage="1">The town's front door, which varies: an online request (Cherry Hill, SDL), a page of PDF forms (Mount Laurel, FastTrackGov), or DCA's own paper intake for a relinquished town (Mullica, since 2026-02). <a class="cite" href="#s8">[8]</a><a class="cite" href="#s12">[12]</a></div>
+    <div data-stage="2">A fee request, then a prescreen result. <a class="cite" href="#s9">[9]</a></div>
+    <div data-stage="3">A deficiency notice with markups. <a class="cite" href="#s9">[9]</a></div>
+    <div data-stage="4">A resubmittal request. <a class="cite" href="#s9">[9]</a></div>
+    <div data-stage="5">The permit, or a denial with reasons. <a class="cite" href="#s4">[4]</a></div>
+    <div class="gap" data-stage="6">?</div>
+    <div data-stage="7">&middot;</div>
+    <div data-stage="8">Each inspection result, pass or fail. <a class="cite" href="#s4">[4]</a></div>
+    <div data-stage="9">The certificate of occupancy. <a class="cite" href="#s4">[4]</a></div>
+    </div>
+
+    <!-- STAFF WORK -->
+    <div class="gridrow">
+    <div class="lane">Staff work</div>
+    <div data-stage="1">When the applicant explains the project at the counter, staff determine whether a Zoning Review or other prior approval is needed. <a class="cite" href="#s21">[21]</a> The application is taken in <span class="man">by hand</span>; neither DCA system does intake. <a class="cite" href="#s11">[11]</a></div>
+    <div data-stage="2">For DCA-reviewed plans, staff check the file is complete before review; the application still comes in <span class="man">by hand</span>. <a class="cite" href="#s9">[9]</a><a class="cite" href="#s11">[11]</a> A 2016 manual shows the same step generically (completeness and prior-approval check before plan review is assigned); not confirmed as DCA's current process. <a class="cite" href="#s16">[16]</a></div>
+    <div data-stage="3">Subcode officials review; plan review proceeds even if a prior approval is still pending. <a class="cite" href="#s1">[1]</a></div>
+    <div data-stage="4">Re-review of the corrected plans in the same system. <a class="cite" href="#s9">[9]</a></div>
+    <div data-stage="5">The construction official signs only after every subcode official approves; the permit issues only after DCA releases the plans, and DCA ensures the town gets a copy. Silence past 20 business days counts as a denial the applicant can appeal. <a class="cite" href="#s2">[2]</a><a class="cite" href="#s4">[4]</a></div>
+    <div class="gap" data-stage="6">?</div>
+    <div data-stage="7">DCA reviews the code's reserved classes and the higher-class work a town is not licensed for; a town can relinquish enforcement to DCA, which then runs its permitting. <a class="cite" href="#s1">[1]</a></div>
+    <div data-stage="8">Trade inspectors inspect within 3 business days of a request. <span class="man">manual scheduling</span> <a class="cite" href="#s4">[4]</a> A 2016 manual shows a fuller branch: pass gets an approved sticker; fail gets a not-approved sticker and can lead to a Notice of Violation, a Stop Work Order, or an Order of Penalty. <a class="cite" href="#s16">[16]</a></div>
+    <div data-stage="9">The certificate issues within 10 business days of a written application. <a class="cite" href="#s4">[4]</a> A 2016 manual shows a Tech Asst preparing the certificate in advance, comparing it against the owner's request, and the construction official signing before it's numbered and filed. <a class="cite" href="#s16">[16]</a></div>
+    </div>
+
+    <!-- SYSTEMS -->
+    <div class="gridrow">
+    <div class="lane">Systems</div>
+    <div class="sysrow" data-stage="1">Municipal front doors: SDL (Cherry Hill), FastTrackGov (Mount Laurel). <a class="cite" href="#s8">[8]</a> Not confirmed connected to DCA's own EnerGov back office. PermitsNJ appears to have been decommissioned; whether it was ever a DCA-internal fee/issuance tool or a municipal reporting system is unclear. <a class="cite" href="#s15">[15]</a><a class="cite" href="#s19">[19]</a></div>
+    <div class="sysrow" data-stage="2">Fees: EnerGov. Plan review: ePlans / Bluebeam. PermitsNJ appears to have been decommissioned; its actual role, fee/issuance tool or municipal reporting system, is unclear. <a class="cite" href="#s19">[19]</a> <a class="cite" href="#s11">[11]</a></div>
+    <div class="sysrow" data-stage="3">ePlans / Bluebeam. <a class="cite" href="#s9">[9]</a><a class="cite" href="#s11">[11]</a></div>
+    <div class="sysrow" data-stage="4">ePlans amendment. <a class="cite" href="#s9">[9]</a></div>
+    <div class="sysrow" data-stage="5">Issuance: EnerGov. PermitsNJ appears to have been decommissioned. <a class="cite" href="#s19">[19]</a> <a class="cite" href="#s11">[11]</a></div>
+    <div class="sysrow gap" data-stage="6">?</div>
+    <div class="sysrow" data-stage="7">DCA runs permitting for the 50-plus towns on its own systems. <a class="cite" href="#s11">[11]</a></div>
+    <div class="sysrow" data-stage="8">Inspection scheduling is manual. <a class="cite" href="#s11">[11]</a></div>
+    <div class="sysrow" data-stage="9">&middot;</div>
+    </div>
+
+    <!-- OPEN QUESTIONS -->
+    <div class="gridrow">
+    <div class="lane">Open questions</div>
+    <div class="qrow" data-stage="1"><ul class="qlist"><li>Where does a first-time applicant start a permit: by phone, at a counter, or with a form to download?</li><li>Which prior approval drives the schedule most?</li><li>Summit's own process starts with an in-person conversation before the applicant knows which form to fill out. <a class="cite" href="#s21">[21]</a> Is that counter-triage step common across towns, or specific to how Summit runs its office?</li><li>Summit checks a property for existing open permits before accepting a new application, since an open permit can delay approval. <a class="cite" href="#s21">[21]</a> Is that check universal, and how often does it block or delay someone?</li></ul></div>
+    <div class="qrow" data-stage="2"><ul class="qlist"><li>How much of what applicants submit arrives on paper versus electronically?</li><li>What happens to the paper next, and how long does that take?</li><li>Do staff point applicants to one channel?</li><li>The code has required electronic applications since 2024-11 <a class="cite" href="#s17">[17]</a>; where paper still persists, what's enforcing or blocking compliance?</li><li>DCA's Q&amp;A says staff rely on "the older system," and PermitsNJ, paired with ePlans, is what the proposal draft names as that older system. <a class="cite" href="#s19">[19]</a> If PermitsNJ is gone, what are staff using now instead of EnerGov?</li></ul></div>
+    <div class="qrow" data-stage="3"><ul class="qlist"><li>How are deficiencies communicated to the applicant, and how clearly?</li><li>Which subcode reviewer holds up a decision most often?</li><li>Summit's own FAQ names two delay causes directly: missing or illegible paperwork at submittal, and applicants or their hired professionals not returning calls promptly. <a class="cite" href="#s23">[23]</a> Do these hold up as the main causes elsewhere, or is Summit's experience different from DCA's own reviews?</li></ul></div>
+    <div class="qrow" data-stage="4"><ul class="qlist"><li>For any professionals who tried digital submission and went back to paper, what happened?</li><li>What do staff dislike about the newer system?</li></ul></div>
+    <div class="qrow" data-stage="5"><ul class="qlist"><li>Which checks can subcode staff run as simple arithmetic, and which need context or judgment?</li><li>DCA has 20 business days to decide; silence past that lets the applicant treat it as a denial and appeal. <a class="cite" href="#s4">[4]</a> Does DCA track that 20-day window internally? Has any applicant used the right to treat silence as a denial, or does it go unused?</li><li>Does fee collection still happen at separate points (issuance, certificate, variation), each logged by hand, or has it consolidated? Does a Tax Assessor notification still fire when a permit fee is collected? <a class="cite" href="#s16">[16]</a></li></ul></div>
+    <div class="qrow" data-stage="6"><ul class="qlist"><li>Can an applicant check status without calling?</li><li>When someone does call, what can the staff member see, and in which system are they looking, EnerGov, ePlans, or something else?</li></ul></div>
+    <div class="qrow" data-stage="7"><ul class="qlist"><li>For a self-enforcing town like Cherry Hill, does DCA-reserved work bypass the town's own intake, or start there and get forwarded? If forwarded, does the town's staff keep any role afterward, and does the applicant ever find out which one happened?</li><li>SDL and EnerGov are separate vendor systems with no confirmed integration between them <a class="cite" href="#s15">[15]</a>; when a town's staff need to get a file to DCA, do they have a system to do it with, or are they re-keying or emailing it by hand?</li><li>Mullica relinquished to DCA's Southern Regional Office in February 2026. <a class="cite" href="#s12">[12]</a> Is intake there paper only, and is that DCA's default for any relinquished town? For a Mullica applicant today, who do they call with a question, the town or DCA, and does either side know the answer?</li><li>Where a handoff exists, which staff member ends up re-entering something someone else already typed, and does the applicant ever see that delay reflected back to them?</li><li>DCA plays two roles: reviewing certain plan classes directly, and running full permitting for towns that have relinquished enforcement to it. Does the same DCA employee have to switch between two different ways of working depending on which town's file just landed on their desk?</li></ul></div>
+    <div class="qrow" data-stage="8"><ul class="qlist"><li>Is inspection scheduling digital, or still phone and paper?</li><li>Where do inspections stall?</li><li>Which of the 2016 manual's steps (logs, stickers, violation notices) still run this way today, whether the work is handled by DCA directly or by a town's own building department? <a class="cite" href="#s16">[16]</a> Have any of these steps changed since the 2024 electronic-application mandate? <a class="cite" href="#s17">[17]</a></li></ul></div>
+    <div class="qrow" data-stage="9"><ul class="qlist"><li>How is the certificate requested?</li><li>How long does the applicant wait from start to certificate?</li><li>Does the 2016 manual's paper trail (fee log, permit file, central file) still run this way today, whether the work is handled by DCA directly or by a town, and has it changed since the 2024 electronic-application mandate? <a class="cite" href="#s16">[16]</a><a class="cite" href="#s17">[17]</a></li></ul></div>
+    </div>
+
+  </div>
+  </div>
+
+  <div id="simple-blueprint" style="display:none;">
+    <div class="simple-banner">A homeowner doing minor residential work at a self-enforcing town likely skips case-level DCA review: no plan review, no subcode sign-off, no DCA release. That much comes from a 2016 procedures manual's Minor Work branch <a class="cite" href="#s16">[16]</a>, not from any current digital system. DCA still receives this permit in aggregate, though: every municipality, including self-enforcing ones, must report monthly permit activity to DCA. <a class="cite" href="#s20">[20]</a> We haven't confirmed whether minor work can ever fall into a DCA-reserved class, whether this 2016 process still matches how any specific town handles minor work today, or whether "no case-level review" is the same thing as "no DCA involvement" once that reporting requirement is counted.</div>
+    <div class="sgridrow">
+      <div class="corner"></div>
+      <div class="phase" data-sstage="1"><span class="n">1</span>Application &amp; screening</div>
+      <div class="phase" data-sstage="2"><span class="n">2</span>Permit issuance</div>
+      <div class="phase" data-sstage="3"><span class="n">3</span>Work performed</div>
+      <div class="phase" data-sstage="4"><span class="n">4</span>Inspection</div>
+      <div class="phase" data-sstage="5"><span class="n">5</span>Certificate of Approval</div>
+    </div>
+    <div class="sgridrow">
+      <div class="lane">Applicant does</div>
+      <div data-sstage="1">Submits the same F-100 jacket; the technical section may be lighter for minor work. <a class="cite" href="#s16">[16]</a></div>
+      <div data-sstage="2">Receives the Minor Work Permit directly, without the subcode-by-subcode plan review the standard path requires. <a class="cite" href="#s16">[16]</a></div>
+      <div data-sstage="3">Performs the work, then notifies the town when it's complete. <a class="cite" href="#s16">[16]</a></div>
+      <div data-sstage="4">Awaits a single inspection, rather than requesting one per milestone. <a class="cite" href="#s16">[16]</a></div>
+      <div data-sstage="5">Receives a Certificate of Approval, a different document from the Certificate of Occupancy the standard path ends with. <a class="cite" href="#s16">[16]</a></div>
+    </div>
+    <div class="sgridrow">
+      <div class="lane">What they see</div>
+      <div class="gap" data-sstage="1">?</div>
+      <div data-sstage="2">The permit, issued without the standard path's multi-subcode review wait. <a class="cite" href="#s16">[16]</a></div>
+      <div class="gap" data-sstage="3">?</div>
+      <div data-sstage="4">One inspection result, not a series tied to construction milestones. <a class="cite" href="#s16">[16]</a></div>
+      <div data-sstage="5">The certificate, or presumably a failure notice; the 2016 source doesn't detail what a failed inspection leads to here. <a class="cite" href="#s16">[16]</a></div>
+    </div>
+    <div class="sgridrow">
+      <div class="lane">Staff work</div>
+      <div data-sstage="1">A Tech Asst screens whether a permit is required, whether it's an initial application, and whether it qualifies as Minor Work, then checks completeness under a separate, lighter rule than the standard path uses. <a class="cite" href="#s16">[16]</a></div>
+      <div data-sstage="2">A Tech Asst or the Construction Official prepares and issues the Minor Work Permit directly. <a class="cite" href="#s16">[16]</a></div>
+      <div class="gap" data-sstage="3">?</div>
+      <div data-sstage="4">A subcode official or inspector performs the required inspection within 30 days of the completion notice, a single-pass window instead of the standard path's 3-business-day, per-milestone inspections. <a class="cite" href="#s16">[16]</a></div>
+      <div data-sstage="5">A Tech Asst or the Construction Official prepares and issues the Certificate of Approval. <a class="cite" href="#s16">[16]</a></div>
+    </div>
+    <div class="sgridrow">
+      <div class="lane">Systems</div>
+      <div data-sstage="1">The town reports this permit to DCA in a monthly aggregate filing, regardless of what system it's tracked in locally. <a class="cite" href="#s20">[20]</a></div>
+      <div class="gap" data-sstage="2">?</div>
+      <div class="gap" data-sstage="3">?</div>
+      <div class="gap" data-sstage="4">?</div>
+      <div class="gap" data-sstage="5">?</div>
+    </div>
+    <div class="sgridrow">
+      <div class="lane">Open questions</div>
+      <div class="qrow" data-sstage="1"><ul class="qlist"><li>Does any current system, SDL, FastTrackGov, ePlans, flag Minor Work separately at intake, or is this distinction paper-only and possibly gone?</li><li>For a self-enforcing town, does DCA ever see any part of this path, or does it stay entirely local?</li></ul></div>
+      <div class="qrow" data-sstage="2"><ul class="qlist"><li>Is direct issuance, without a plan review cycle, still real anywhere, or has it merged into the standard permit flow now that applications are electronic?</li></ul></div>
+      <div class="qrow" data-sstage="3"><ul class="qlist"><li>Is there any check-in during construction, or is the completion notice the only touchpoint?</li></ul></div>
+      <div class="qrow" data-sstage="4"><ul class="qlist"><li>Is 30 days still the real window? Does an inspection-scheduling system, if one exists, treat Minor Work differently from milestone inspections?</li></ul></div>
+      <div class="qrow" data-sstage="5"><ul class="qlist"><li>Does "Certificate of Approval" still exist as a document distinct from "Certificate of Occupancy," or have these merged?</li><li>What happens on a failed inspection specifically for Minor Work?</li></ul></div>
+    </div>
+  </div>
+
+  <div class="kickoff" style="margin-top:12px;border-radius:8px;"><b>To confirm at kickoff:</b> every specific town in this blueprint, Cherry Hill, Mount Laurel, and Summit, is self-enforcing, not DCA-served; the counter-triage step, the delay causes, the status tracking, all of it comes from towns where DCA's role is limited to occasional reserved-class review and aggregate reporting. The actual DCA-served population, the 50-plus towns DCA runs permitting for directly, has exactly one example so far, Mullica, and all that's confirmed there is that it relinquished in February 2026 and DCA's regional office reviews paper only. What a DCA-served town's front door, staff work, and applicant experience look like is still almost entirely unknown, and that gap should shape who we interview first. Beyond that: the outputs of DCA's event-storming sessions on the DEP wetlands and DOT major access permits, so Track B can build on it; whether DCA's two roles, reviewing certain plan classes directly and running full permitting for towns that have relinquished enforcement to it, share the same systems and staff; whether the current systems were built to auto-check the code, since that shapes what a computer can decide; whether a shorter Minor Work path and a separate Variation application <a class="cite" href="#s16">[16]</a> still exist in current systems, given roughly 89% of volume is small residential alteration work under $5,000 <a class="cite" href="#s18">[18]</a>; whether homeowner-as-agent and professional-as-agent map onto that same simple/complex split, or vary independently; and how DCA staff, municipal staff, licensed professionals, and residents each experience this process differently.</div>
+
+  <div class="foot">
+    <p style="margin:0 0 .3rem;"><b>Sources</b> (click a bracketed number in any cell to jump here):</p>
+    <ul class="srclist">
+      <li id="s1"><b>[1]</b> N.J.A.C. 5:23 (UCC): reserved review 3.11(a); classification 4.3A; relinquishment 4.3(c)2; prior approvals 1.4, 2.16; plan review proceeds without prior approvals at 2.15(f)4ii.</li>
+      <li id="s2"><b>[2]</b> 5:23-3.11(c): permit issues after DCA releases plans; DCA ensures the town's copy.</li>
+      <li id="s3"><b>[3]</b> 5:23-2.15(a), 4.5(b)2: the jacket and per-trade technical sections. Summit's own DCS Document Center calls it a jacket too, real municipal usage, not industry slang. <a class="cite" href="#s21">[21]</a></li>
+      <li id="s4"><b>[4]</b> 5:23-2.16 (20 business days; silence = denial; 2.16(d) signature); 2.18 (inspection within 3 business days of a request); 2.23 (certificate of occupancy within 10 business days of a written application).</li>
+      <li id="s8"><b>[8]</b> Municipal front-door capture, 2026-07: Cherry Hill's SDL portal offers an online building-permit request (chnj.gov/1429/Construction); Mount Laurel posts fillable PDF forms on FastTrackGov; Summit also runs on SDL. <a class="cite" href="#s21">[21]</a> The dataset has a field labeled "software," but it names the back-office reporting system, not the system applicants use.</li>
+      <li id="s9"><b>[9]</b> DCA ePlans Applicant User Guide v5.0 (payment gate, prescreen, resubmittal, amendment).</li>
+      <li id="s11"><b>[11]</b> DCA Q&amp;A, Attachment D: DCA runs two systems; intake and inspection scheduling are manual in both; users rely on the older system for the 50-plus municipalities DCA serves.</li>
+      <li id="s12"><b>[12]</b> Mullica Township Ordinance 18-2025: relinquished UCC enforcement to DCA effective 2026-02-09 under 5:23-4.3(c)2; DCA's Southern Regional Office now enforces the code there. DCA's regional code enforcement offices review paper submissions only (mullicatownship.org/construction, 2026-07 capture).</li>
+      <li id="s13"><b>[13]</b> N.J.A.C. 7:7A (DEP wetlands clocks).</li>
+      <li id="s14"><b>[14]</b> N.J.A.C. 16:47 (DOT access clocks).</li>
+      <li id="s15"><b>[15]</b> SDL (Spatial Data Logic) and EnerGov (Tyler Technologies) are separate vendor platforms; no integration or data interchange between them has been found. Cherry Hill's front door runs on SDL; DCA's own back office runs on EnerGov. PermitsNJ appears to have been decommissioned; the proposal draft pairs it with ePlans as part of an older system, not with EnerGov. <a class="cite" href="#s19">[19]</a></li>
+      <li id="s16"><b>[16]</b> Municipal Construction Code Enforcement Office Procedures Manual, 2016 (flowcharts, pp.152&ndash;169): intake and routing, including a separate Minor Work branch (5:23-2.17A, 2.17A(d)) with its own permit and Certificate of Approval (F170, F180, F260, distinct from the general permit and Certificate of Occupancy); plan review sign-off by subcode; permit release; inspections and compliance, including Stop Work Order (F250, 5:23-2.31(d)) and Notice of Violation/Order of Penalty (F211, F212); final inspection and certificate issuance (F260, F270, 5:23-2.23/2.23A); Variation application (F160, 5:23-2.10/2.11); fee logging (L-700) and Tax Assessor notification on permit fee collection. Dated 2016; not confirmed current or tied to any specific town's present-day system.</li>
+      <li id="s17"><b>[17]</b> N.J.A.C. 5:23-2.15B(a): electronic applications required since 2024-11.</li>
+      <li id="s18"><b>[18]</b> The 89% figure is calculated from the NJ Construction Permit Data set at data.nj.gov (dataset w9se-dmra, data.nj.gov/Reference-Data/NJ-Construction-Permit-Data/w9se-dmra). We have not independently re-run this calculation ourselves against the raw dataset.</li>
+      <li id="s19"><b>[19]</b> DCA's own Construction Activity Reporting and PermitsNJ page (nj.gov/dca/codes/offices/cars_pnj.shtml, 2026-07 capture) carries an image file named "PNJ_decom," consistent with a decommissioning notice. The surviving text is a 2020-04-13 update stating PermitsNJ would keep running past a planned 2020-06-30 sunset, with reduced support, while towns were told to migrate off it. We could not confirm an exact decommission date; PermitsNJ should not be assumed to be DCA's active current system.</li>
+      <li id="s20"><b>[20]</b> nj.gov/dca/codes/offices/cars_pnj.shtml (2026-07 capture): all municipalities must submit monthly construction activity reports to DCA by the 7th of each month; municipalities issuing more than 200 permits a year must submit electronically via State-approved permitting software.</li>
+      <li id="s21"><b>[21]</b> City of Summit, NJ, DCS Document Center and Construction Permit page (cityofsummit.org/693/DCS-Document-Center, cityofsummit.org/455/Construction-Permit, 2026-07 capture). Summit calls the form "Construction Permit Jacket / Application (F100)." Its published process starts with the applicant explaining the project at the counter; staff then determine whether a Zoning Review or other prior approval applies, before any technical section is assembled. Summit is self-enforcing, not DCA-served: its municipal code, Chapter 14 (ecode360.com, 2026-07 capture), establishes its own Construction Official and full slate of subcode officials.</li>
+      <li id="s22"><b>[22]</b> Highlands, NJ, Uniform Construction Code Permit Help Guide (highlandsnj.gov, 2026-07 capture): lists DEP wetlands, floodplain, and COAH approvals as "Mandatory Prior approvals required PRIOR to the submission of an application, if they are applicable."</li>
+      <li id="s23"><b>[23]</b> City of Summit, NJ, Construction Permit Approval FAQ (cityofsummit.org/DocumentCenter/View/3449, 2026-07 capture): names two documented delay causes: missing, illegible, or incorrect paperwork at submittal, and applicants or their hired professionals not returning calls promptly.</li>
+    </ul>
+    <p class="conf">Confidential and proprietary to Focus Consulting. Prepared for NJ DCA / InnovateNJ. Not for redistribution.</p>
+  </div>
+
+</div>
+<script>
+function applyPreset(name){
+  var complexEl = document.getElementById('complex-blueprint');
+  var simpleEl = document.getElementById('simple-blueprint');
+  if(name === 'simple'){
+    complexEl.style.display = 'none';
+    simpleEl.style.display = '';
+  } else {
+    complexEl.style.display = '';
+    simpleEl.style.display = 'none';
+    setStageVisible(8, name !== 'rfp7');
+    setStageVisible(9, name !== 'rfp7');
+  }
+  document.querySelectorAll('.modebtn[data-preset]').forEach(function(b){
+    b.setAttribute('aria-pressed', b.getAttribute('data-preset') === name ? 'true' : 'false');
+  });
+}
+function setStageVisible(n, show){
+  document.querySelectorAll('[data-stage="' + n + '"]').forEach(function(el){
+    el.style.display = show ? '' : 'none';
+  });
+  updateGrid();
+}
+function updateGrid(){
+  var cols = ['120px'];
+  for(var i=1;i<=9;i++){
+    var el = document.querySelector('[data-stage="' + i + '"]');
+    var visible = el && el.style.display !== 'none';
+    cols.push(visible ? '1fr' : '0px');
+  }
+  var colStr = cols.join(' ');
+  document.querySelectorAll('.gridrow').forEach(function(row){
+    row.style.gridTemplateColumns = colStr;
+  });
+}
+</script>
+</body>
+</html>
