@@ -18,10 +18,8 @@ html,body{margin:0;padding:0;background:var(--canvas);}
 body{font-family:var(--font);color:var(--ink);}
 .wrap{max-width:1180px;margin:0 auto;padding:0 0 40px;}
 
-.appbar{background:var(--nj-navy);color:#fff;padding:22px 32px;display:flex;align-items:flex-start;justify-content:space-between;gap:24px;border-radius:0 0 4px 4px;}
-.appbar h1{margin:0 0 4px;font-size:20px;font-weight:700;letter-spacing:.2px;}
-.appbar p{margin:0;font-size:13px;color:rgba(255,255,255,.78);}
-.badge{flex:0 0 auto;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;border-radius:4px;white-space:nowrap;}
+.appbar{background:var(--nj-navy);color:#fff;padding:22px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;border-radius:0 0 4px 4px;}
+.appbar h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.2px;}
 
 .legend{display:flex;align-items:center;flex-wrap:wrap;padding:16px 32px 4px;font-size:12.5px;color:var(--ink-soft);}
 .legend .item{display:inline-flex;align-items:center;margin-right:26px;}
@@ -59,17 +57,13 @@ tr.spacer td{height:6px;padding:0;background:var(--card);border-left:none;}
 <div class="wrap">
 
   <div class="appbar">
-    <div>
-      <h1>NJ Permitting Discovery — Delivery Timeline</h1>
-      <p>12-week period of performance, starting at contract award</p>
-    </div>
-    <div class="badge">Confidential</div>
+    <h1>NJ Permitting Discovery — Delivery Timeline</h1>
   </div>
 
   <div class="legend">
     <span class="item"><span class="swatch" style="background:var(--nj-blue)"></span>Track A — DCA discovery</span>
     <span class="item"><span class="swatch" style="background:var(--nj-green)"></span>Track B — DEP/DOT blueprints</span>
-    <span class="item"><span class="swatch" style="background:repeating-linear-gradient(135deg, var(--nj-blue) 0 4px, var(--nj-green) 4px 8px)"></span>Piggybacked on Track A</span>
+    <span class="item"><span class="swatch" style="background:repeating-linear-gradient(135deg, var(--nj-blue) 0 4px, var(--nj-green) 4px 8px)"></span>Input from Track A</span>
     <span class="item"><span class="diamond"></span>QASP checkpoint / acceptance</span>
     <span class="item"><span class="flagmark"></span>In-person NJ site visit</span>
   </div>
@@ -78,7 +72,7 @@ tr.spacer td{height:6px;padding:0;background:var(--card);border-left:none;}
     <table class="gantt">
       <colgroup>
         <col class="labelcol">
-        <col><col><col><col><col><col><col><col><col><col><col>
+        <col><col><col><col><col><col><col><col><col><col><col><col>
       </colgroup>
       <thead>
         <tr>
@@ -110,6 +104,7 @@ tr.spacer td{height:6px;padding:0;background:var(--card);border-left:none;}
           <td><span class="mk"><span class="diamond"></span>QASP</span></td>
           <td></td>
           <td><span class="mk"><span class="diamond"></span>QASP</span></td>
+          <td></td>
           <td><span class="mk"><span class="diamond"></span>Final</span></td>
         </tr>
 
@@ -119,7 +114,7 @@ tr.spacer td{height:6px;padding:0;background:var(--card);border-left:none;}
           <td class="bar blue" colspan="3">Fieldwork Sprint 1<span class="sub">Staff, municipal, professional</span></td>
           <td class="bar blue" colspan="2">Fieldwork Sprint 2<span class="sub">Residents + saturation</span></td>
           <td class="bar blue">Close fieldwork<span class="sub">Draft Deliverable 1</span></td>
-          <td class="bar blue" colspan="2">UCC workshops<span class="sub">Draft Deliverable 2</span></td>
+          <td class="bar blue" colspan="2">Compliance-logic sessions<span class="sub">Draft Deliverable 2</span></td>
           <td class="bar blue" colspan="2">Build Deliverable 3<span class="sub">Exec summary, personas</span></td>
           <td class="bar blue">Submit<span class="sub">Final validation</span></td>
         </tr>
@@ -133,6 +128,7 @@ tr.spacer td{height:6px;padding:0;background:var(--card);border-left:none;}
           <td><span class="mk"><span class="flagmark"></span>Visit 2</span></td>
           <td></td>
           <td><span class="mk"><span class="flagmark"></span>Visit 3</span></td>
+          <td></td>
           <td></td>
           <td></td>
           <td></td>
